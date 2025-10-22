@@ -165,7 +165,7 @@ public class Vecteur {
      * @return true si les vecteurs sont colinéaires et de même dimension, sinon false.
      */
     public boolean estColineaire(final Vecteur pV){
-        if (coords.length==pV.coords.length) return (approche(produitScalaire(pV)-pV.norme()*norme(), 0, 1e-9, 1e-5));
+        if (coords.length==pV.coords.length) return (approche(Math.abs(produitScalaire(pV))-pV.norme()*norme(), 0, 1e-9, 1e-5));
         return false;
     }
 
@@ -194,5 +194,10 @@ public class Vecteur {
      */
     public boolean approche(double a, double b, double epsilon_rel, double epsilon_abs){
         return (Math.abs(a-b) <= Math.max(Math.max(Math.abs(a), Math.abs(b)) * epsilon_rel, epsilon_abs));
+    }
+
+    @Override
+    public String toString() {
+        return "Coordonnées: "+Arrays.toString(coords);
     }
 }
