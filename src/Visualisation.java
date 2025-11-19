@@ -26,7 +26,7 @@ public class Visualisation {
         Matrice matTransform = new Matrice(2,2);
         Vecteur pointATracer = new Vecteur(2);
 
-        for (double vAlpha = -1.0; vAlpha - 1.0 < 10E-15; vAlpha += 0.01){
+        for (double vAlpha = -1.0; vAlpha <= 1.0 + 1E-15; vAlpha += 0.01){
             double k = vAlpha*kmax;
             matTransform.setHomothetie(k);
             pointATracer = matTransform.multiplicationVectorielle(pDirection);
