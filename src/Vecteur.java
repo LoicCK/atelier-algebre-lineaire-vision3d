@@ -99,7 +99,7 @@ public class Vecteur {
      */
     public void normaliser(){
         double temp = norme();
-        if (temp!=0) multiplicationScalaire(1/temp);
+        if (!approche(temp, 0, 1e-9,1e-5)) multiplicationScalaire(1/temp);
     }
 
     /**
