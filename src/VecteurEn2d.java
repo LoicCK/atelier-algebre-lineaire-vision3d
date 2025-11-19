@@ -78,7 +78,7 @@ public class VecteurEn2d {
      * @return true si les vecteurs sont orthogonaux, sinon false.
      */
     public boolean estOrthogonal(VecteurEn2d pVecteur){
-        return (produitScalaire(pVecteur) == 0);
+        return approche(produitScalaire(pVecteur), 0, 1e-9,1e-5);
     }
 
     /**
@@ -107,7 +107,7 @@ public class VecteurEn2d {
      * @return true si les vecteurs sont colinéaires, sinon false.
      */
     public boolean estColineaire(VecteurEn2d pVecteur){
-        return (this.x*pVecteur.y == this.y*pVecteur.x);
+        return approche(this.x*pVecteur.y, this.y*pVecteur.x, 1e-9,1e-5);
     }
 
     /**
