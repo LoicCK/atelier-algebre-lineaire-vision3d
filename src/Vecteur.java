@@ -196,6 +196,39 @@ public class Vecteur {
         return (Math.abs(a-b) <= Math.max(Math.max(Math.abs(a), Math.abs(b)) * epsilon_rel, epsilon_abs));
     }
 
+    /**
+     * Convertit un vecteur classique en vecteur homogène en ajoutant une dimension.
+     * La dernière coordonnée (w) est initialisée à 1.0.
+     *
+     * @param pVecteur Le vecteur d'origine de dimension N.
+     * @return Un nouveau vecteur de dimension N+1 représentant le vecteur en coordonnées homogènes.
+     */
+    public static Vecteur versHomogene(Vecteur pVecteur) {
+        Vecteur vHomogene = new Vecteur(pVecteur.getDimension() + 1);
+        for (int i = 0; i < pVecteur.getDimension(); i++) {
+            vHomogene.setCoordonnee(i, pVecteur.getCoordonnee(i));
+        }
+        vHomogene.setCoordonnee(pVecteur.getDimension(), 1.0);
+        return vHomogene;
+    }
+
+    /**
+     * Convertit un vecteur homogène en vecteur classique (déhomogénéisation).
+     * Divise toutes les composantes par la dernière coordonnée (w) et réduit la dimension de 1.
+     *
+     * @param pVecteur Le vecteur homogène de dimension N+1.
+     * @return Un nouveau vecteur de dimension N représentant les coordonnées cartésiennes classiques.
+     */
+    public static Vecteur depuisHomogene(Vecteur pVecteur) {
+        int dim = pVecteur.getDimension() - 1;
+        Vecteur vClassique = new Vecteur(dim);
+        double w = pVecteur.getCoordonnee(dim);
+        for (int i = 0; i < dim; i++) {
+            vClassique.setCoordonnee(i, pVecteur.getCoordonnee(i) / w);
+        }
+        return vClassique;
+    }
+
     @Override
     public String toString() {
         return "Coordonnées: "+Arrays.toString(coords);

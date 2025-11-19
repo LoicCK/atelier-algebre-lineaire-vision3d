@@ -160,7 +160,7 @@ public class Matrice {
      * @param alpha L'angle de rotation en radians.
      */
     public void setRotation2d(double alpha){
-        if (getNbLignes()!=2 || getNbColonnes()!=2) return;
+        if (getNbLignes()!=2 || getNbColonnes()!=2) throw new RuntimeException("La matrice devrait être en 2x2");
         setCoefficient(0,0,Math.cos(alpha));
         setCoefficient(0,1,-Math.sin(alpha));
         setCoefficient(1,0,Math.sin(alpha));
@@ -175,11 +175,131 @@ public class Matrice {
      * @param alpha L'angle de rotation en radians.
      */
     public void setRotation3dOx(double alpha){
-        if (getNbLignes()!=3 || getNbColonnes()!=3) return;
+        if (getNbLignes()!=3 || getNbColonnes()!=3) throw new RuntimeException("La matrice devrait être en 3x3");
         setIdentite();
         setCoefficient(1,1,Math.cos(alpha));
         setCoefficient(1,2,-Math.sin(alpha));
         setCoefficient(2,1,Math.sin(alpha));
         setCoefficient(2,2,Math.cos(alpha));
+    }
+
+    /**
+     * Extrait une colonne de la matrice sous forme de vecteur.
+     *
+     * @param n L'indice de la colonne à extraire (0-based).
+     * @return Un vecteur contenant les éléments de la colonne n.
+     * @throws RuntimeException Si l'indice n est invalide.
+     */
+    public Vecteur getVecteurColonne(int n){
+        if (n < 0 || n >= getNbColonnes()){
+            throw new RuntimeException(n + " n'est pas un argument valable");
+        }
+        Vecteur vect = new Vecteur(getNbLignes());
+        for (int i = 0; i < getNbLignes(); i++){
+            vect.setCoordonnee(i, tab[i][n]);
+        }
+        return vect;
+    }
+
+    /**
+     * Calcule le produit matriciel de l'instance courante par une autre matrice.
+     *
+     * @param mat La matrice avec laquelle multiplier (doit avoir un nombre de lignes égal au nombre de colonnes de l'instance courante).
+     * @return Une nouvelle matrice résultat du produit, ou null si les dimensions sont incompatibles.
+     */
+    public Matrice produitMatriciel(Matrice mat){
+        Matrice resultat = null;
+
+        if (this.getNbColonnes() == mat.getNbLignes()){
+            resultat = new Matrice(this.getNbLignes(), mat.getNbColonnes());
+            for (int i = 0; i < resultat.getNbLignes(); i++){
+                for (int j = 0; j < resultat.getNbColonnes(); j++){
+                    double temp = 0;
+                    for (int k = 0; k < this.getNbColonnes(); k++){
+                        temp += this.getCoefficient(i, k) * mat.getCoefficient(k, j);
+                    }
+                    resultat.setCoefficient(i, j, temp);
+                }
+            }
+        }
+
+        return resultat;
+    }
+
+    /**
+     * Configure la matrice en matrice de rotation 3D d'angle alpha autour de l'axe Oy.
+     * L'opération modifie la matrice courante (doit être 3x3).
+     *
+     * @param alpha L'angle de rotation en radians.
+     */
+    public void setRotation3dOy(double alpha){
+        if (getNbLignes()!=3 || getNbColonnes()!=3) throw new RuntimeException("La matrice devrait être en 3x3");
+        setIdentite();
+        setCoefficient(0,0,Math.cos(alpha));
+        setCoefficient(0,2,Math.sin(alpha));
+        setCoefficient(2,0,-Math.sin(alpha));
+        setCoefficient(2,2,Math.cos(alpha));
+    }
+
+    /**
+     * Configure la matrice en matrice de rotation 3D d'angle alpha autour de l'axe Oz.
+     * L'opération modifie la matrice courante (doit être 3x3).
+     *
+     * @param alpha L'angle de rotation en radians.
+     */
+    public void setRotation3dOz(double alpha){
+        if (getNbLignes()!=3 || getNbColonnes()!=3) throw new RuntimeException("La matrice devrait être en 3x3");
+        setIdentite();
+        setCoefficient(0,0,Math.cos(alpha));
+        setCoefficient(0,1,-Math.sin(alpha));
+        setCoefficient(1,0,Math.sin(alpha));
+        setCoefficient(1,1,Math.cos(alpha));
+    }
+
+    /**
+     * Crée une matrice de rotation composée en combinant des rotations successives
+     * autour des axes Ox, Oy et Oz.
+     *
+     * @param pAlphaX Angle de rotation autour de l'axe X (en radians).
+     * @param pAlphaY Angle de rotation autour de l'axe Y (en radians).
+     * @param pAlphaZ Angle de rotation autour de l'axe Z (en radians).
+     * @return Une nouvelle Matrice 3x3 représentant la rotation composée.
+     */
+    public static Matrice getRotation(double pAlphaX, double pAlphaY, double pAlphaZ){
+        Matrice rotX = new Matrice(3, 3);
+        rotX.setRotation3dOx(pAlphaX);
+        Matrice rotY = new Matrice(3,3);
+        rotY.setRotation3dOy(pAlphaY);
+        Matrice rotZ = new Matrice(3, 3);
+        rotZ.setRotation3dOz(pAlphaZ);
+        return rotZ.produitMatriciel(rotY.produitMatriciel(rotX));
+    }
+
+    /**
+     * Configure la matrice pour représenter une homothétie en coordonnées homogènes 3D.
+     * Modifie la matrice courante (doit être 4x4).
+     *
+     * @param k Le facteur d'homothétie.
+     */
+    public void setHomothetieHomogene3d(double k) {
+        if (getNbLignes() != 4 || getNbColonnes() != 4) return;
+        setIdentite();
+        setCoefficient(0, 0, k);
+        setCoefficient(1, 1, k);
+        setCoefficient(2, 2, k);
+    }
+
+    /**
+     * Configure la matrice pour représenter une translation en coordonnées homogènes 3D.
+     * Modifie la matrice courante (doit être 4x4).
+     *
+     * @param t Le vecteur de translation (dimension 3).
+     */
+    public void setTranslationHomogene3d(Vecteur t) {
+        if (getNbLignes() != 4 || getNbColonnes() != 4) return;
+        setIdentite();
+        setCoefficient(0, 3, t.getCoordonnee(0));
+        setCoefficient(1, 3, t.getCoordonnee(1));
+        setCoefficient(2, 3, t.getCoordonnee(2));
     }
 }
